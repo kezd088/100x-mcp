@@ -6,10 +6,10 @@ try {
   const state=await connection.connect();
   console.log('100x · 请在网页核对连接码：'+state.user_code);
   console.log(state.verification_uri);
-  // Only a validated 100x / loopback URL reaches the Windows URL handler.
-  if(process.platform==='win32') {
-    const child=execFile('rundll32.exe',['url.dll,FileProtocolHandler',state.verification_uri],{windowsHide:true},()=>{}); child.unref();
-  }
+  // Only a validated 100x / loopback URL reaches the system URL handler.
+  const opener=process.platform==='win32'?['rundll32.exe',['url.dll,FileProtocolHandler',state.verification_uri]]
+    :process.platform==='darwin'?['/usr/bin/open',[state.verification_uri]]:null;
+  if(opener) { const child=execFile(opener[0],opener[1],{windowsHide:true},()=>{}); child.unref(); }
   while(Date.parse(state.expires_at)>Date.now()) {
     await new Promise(resolve=>setTimeout(resolve,3200));
     const result=await connection.status();

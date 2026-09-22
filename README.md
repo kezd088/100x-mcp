@@ -6,7 +6,7 @@
 
 让 Codex 对话接入 100x 图片与视频生成。登录 100x、核对连接码、确认后即可创作。账户授权与设备管理就在「充值中心」下方的「MCP / SKILL」。
 
-**版本**：v0.3.0 · **Marketplace**：`100x` · **Plugin**：`100x` · **SKILL**：`100x:100x-creative` · **官网**：[100xspeed.app/mcp](https://100xspeed.app/mcp/)
+**版本**：v0.3.1 · **Marketplace**：`100x` · **Plugin**：`100x` · **SKILL**：`100x:100x-creative` · **官网**：[100xspeed.app/mcp](https://100xspeed.app/mcp/)
 
 ---
 
@@ -20,12 +20,18 @@
 请阅读 https://github.com/kezd088/100x-mcp/blob/main/INSTALL.md，按说明安装 100x MCP + SKILL 到本机 Codex，检查安装结果。不要在对话里索取或显示访问令牌。
 ```
 
-### 备选：Windows PowerShell 一键安装
+### 备选：一键脚本安装
 
-在 PowerShell 中运行（打开网页登录授权，凭据由 Windows DPAPI 本地加密保存）：
+**Windows PowerShell**（打开网页登录授权，凭据由 Windows DPAPI 本地加密保存）：
 
 ```powershell
 & ([scriptblock]::Create((irm https://raw.githubusercontent.com/kezd088/100x-mcp/main/install.ps1))) -Connect
+```
+
+**macOS 终端**（同一套网页授权，凭据存入当前用户的 macOS 钥匙串）：
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/kezd088/100x-mcp/main/install.sh | bash -s -- --connect
 ```
 
 <details>
@@ -39,7 +45,12 @@ codex plugin add 100x@100x --json
 .\install.ps1 -Source "C:\your-folder\100x-mcp" -Connect
 ```
 
-环境前提：Node.js 22+、Git、Codex CLI 0.155.1+。v0.2.0 曾在 Windows Codex Desktop 0.155.1 验证 8 个工具；v0.3.0 增加网页授权工具，目前在本机完成 9 个工具的标准输入输出验证；系统兼容性与排错详见 [接入指南](./docs/codex-desktop.md)。
+```bash
+# macOS 本地开发测试：
+./install.sh --source "/your-folder/100x-mcp" --connect
+```
+
+环境前提：Node.js 22+、Git、Codex CLI 0.155.1+。v0.2.0 曾在 Windows Codex Desktop 0.155.1 验证 8 个工具；v0.3.0 增加网页授权工具，在 Windows 完成 9 个工具的标准输入输出验证；v0.3.1 补齐 macOS 钥匙串授权向导与 `install.sh`，**macOS 真机验收待完成**。系统兼容性与排错详见 [接入指南](./docs/codex-desktop.md)。
 </details>
 
 ---
@@ -106,6 +117,6 @@ Windows Codex Desktop 0.155.1 运行时实测成功调用 100x 服务，生成 1
 
 ## 相关文档
 
-- [Windows 详细安装、配置、更新与排错指南](./docs/codex-desktop.md)
+- [详细安装、配置、更新与排错指南（Windows / macOS）](./docs/codex-desktop.md)
 - [运行时验证记录](./docs/verification.md)
 - [100x 官方网站与说明](https://100xspeed.app/mcp/)

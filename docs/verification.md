@@ -1,5 +1,23 @@
 # 验证记录
 
+## 0.3.1 · macOS 授权向导（代码路径已验，真机待验收）
+
+2026-09-22 晚，在 Windows 机器上完成 macOS 代码路径的验证。**没有真实 macOS 设备参与，这一节不构成 macOS 验收。**
+
+已实际跑过并全绿：
+
+- 客户端 26 项测试通过（`node --test tests/*.test.mjs`）。其中 Windows 原有 12 项无回归，含真实 DPAPI 往返；新增 macOS 8 项、`install.sh` 6 项。
+- macOS 钥匙串用受控替身（`tests/support/security-stub.mjs`）验证：令牌与其 base64 都不出现在进程参数里（只走标准输入）、配置文件里只有条目引用、写入必须带 `-T /usr/bin/security`、待授权数据与令牌是两条互不覆盖的条目、`Codex · macOS` 设备名进入授权请求。
+- 失败分支钉住：钥匙串写入没存住报 `100X_SAVE_FAILED` 而不是当成已连接、条目缺失或内容损坏报 `100X_CREDENTIAL_UNREADABLE`、Windows 写的配置在 macOS 上报 `100X_INVALID_CONFIG`、Linux 等平台报 `100X_CONFIG_PLATFORM` 且不退回明文保存。
+- `install.sh` 用替身 codex 与隔离的 `CODEX_HOME` 跑过 6 条分支：正常安装、`--connect`、来源不是 100x 目录、Codex 版本过低、插件未启用、未知参数，退出码与提示均符合预期。
+
+尚未覆盖，需在真实 macOS 上完成：
+
+- 真实 `/usr/bin/security` 的行为，尤其首次读取是否弹出钥匙串授权框。
+- Codex Desktop for Mac 的插件加载、9 个工具与 `100x:100x-creative` 是否出现在新任务中。
+- 从 GitHub 拉取 `install.sh` 的完整安装、真实网页授权、真实生成与产物下载。
+- Dock 启动时 PATH 不含 Homebrew node 的情况是否真的发生（安装器已加提示，未在真机复现过）。
+
 ## 0.3.0 · 设备授权
 
 2026-09-22，使用 Windows、隔离的本机 PostgreSQL、真实 DPAPI 存储与源码 stdio 桥接完成验证。升级安装后需在 Codex 新建任务加载新增工具。
