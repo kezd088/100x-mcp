@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "100x": {
+      "type": "stdio",
+      "command": "node",
+      "args": [
+        "${PLUGIN_ROOT}/scripts/bridge.mjs"
+      ],
+      "cwd": "${PLUGIN_ROOT}"
+    }
+  }
+}

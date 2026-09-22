@@ -1,0 +1,229 @@
+[
+  {
+    "name": "100x_list_models",
+    "description": "列出 100x 可用型号、模式、分辨率和时长。以实时目录为准，不生成、不扣积分。",
+    "inputSchema": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "100x_quote",
+    "description": "取得当前账户准确积分报价，有效 15 分钟；不提交生成。",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "model": {
+          "type": "string",
+          "maxLength": 80
+        },
+        "prompt": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 12000
+        },
+        "mode": {
+          "type": "string",
+          "enum": [
+            "text",
+            "reference",
+            "first_frame",
+            "first_last_frame"
+          ],
+          "default": "text"
+        },
+        "aspect_ratio": {
+          "type": "string",
+          "pattern": "^(?:\\d{1,2}:\\d{1,2}|adaptive)$"
+        },
+        "resolution": {
+          "type": "string",
+          "pattern": "^\\d{1,4}(?:\\.5)?[PpKk]$"
+        },
+        "duration_seconds": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 120
+        },
+        "quality": {
+          "type": "string",
+          "enum": [
+            "low",
+            "medium",
+            "high",
+            "max",
+            "xhigh"
+          ]
+        },
+        "references": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^100x_[a-z]+_[a-f0-9]{32}$"
+          },
+          "maxItems": 16,
+          "default": []
+        }
+      },
+      "required": [
+        "model",
+        "prompt"
+      ],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "100x_generate_image",
+    "description": "提交已报价的单张图片，遵守 max_credits。立即返回任务；同一意图重试必须复用 quote_id 与 idempotency_key。",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "quote_id": {
+          "type": "string",
+          "pattern": "^100x_[a-z]+_[a-f0-9]{32}$"
+        },
+        "idempotency_key": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9_-]{8,120}$"
+        },
+        "max_credits": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 10000
+        }
+      },
+      "required": [
+        "quote_id",
+        "idempotency_key",
+        "max_credits"
+      ],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "100x_generate_video",
+    "description": "提交已报价的视频，遵守 max_credits。立即返回任务；同一意图重试必须复用 quote_id 与 idempotency_key。",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "quote_id": {
+          "type": "string",
+          "pattern": "^100x_[a-z]+_[a-f0-9]{32}$"
+        },
+        "idempotency_key": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9_-]{8,120}$"
+        },
+        "max_credits": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 10000
+        }
+      },
+      "required": [
+        "quote_id",
+        "idempotency_key",
+        "max_credits"
+      ],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "100x_get_task",
+    "description": "查询本人任务和 100x 结果链接，按照 poll_after_ms 查询，完成后停止。",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "task_id": {
+          "type": "string",
+          "pattern": "^100x_[a-z]+_[a-f0-9]{32}$"
+        }
+      },
+      "required": [
+        "task_id"
+      ],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "100x_get_balance",
+    "description": "查询当前 100x 账户可用与预留积分，不扣费。",
+    "inputSchema": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "100x_upload_asset",
+    "description": "上传参考素材获得 100x 素材编号；最大 20 MB，本地文件优先用包内 media.mjs，避免对话传输 base64。",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "content_base64": {
+          "type": "string",
+          "maxLength": 29360128
+        },
+        "mime_type": {
+          "type": "string",
+          "maxLength": 40
+        },
+        "duration_seconds": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 600
+        }
+      },
+      "required": [
+        "content_base64",
+        "mime_type"
+      ],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
+    }
+  }
+]

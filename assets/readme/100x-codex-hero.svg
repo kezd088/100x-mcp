@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="420" viewBox="0 0 1200 420" role="img" aria-labelledby="title desc">
+  <title id="title">100x for Codex Desktop</title>
+  <desc id="desc">100x 官方 Codex 插件：在对话中生成图片与视频</desc>
+
+  <!-- Background Canvas -->
+  <rect width="1200" height="420" fill="#FCFCFB" stroke="#D6D6D3" stroke-width="1"/>
+
+  <!-- Left: Official 100x Logo & Title -->
+  <g transform="translate(60, 50)">
+    <g fill="none" stroke="#171716" stroke-width="7" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M31 30 39 22v56"/>
+      <rect x="55" y="22" width="36" height="56" rx="18"/>
+      <rect x="99" y="22" width="36" height="56" rx="18"/>
+    </g>
+    <g fill="none" stroke="#2B7FFF" stroke-width="5.5" stroke-linecap="square">
+      <path d="m143 12 22 22M165 12l-22 22"/>
+    </g>
+  </g>
+
+  <!-- Title & Subtitle (All font-size >= 40, font-weight <= 600) -->
+  <text x="260" y="96" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif" font-size="44" font-weight="600" fill="#171716" letter-spacing="-0.5">Codex 对话原生创作</text>
+  <text x="260" y="146" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif" font-size="40" font-weight="400" fill="#5A5A56">接入 100x 图片与视频生成</text>
+
+  <!-- Divider Line -->
+  <path d="M60 180 L1140 180" stroke="#D6D6D3" stroke-width="1"/>
+
+  <!-- Dialogue-to-Visual Generation Diagram (All font-size >= 40, font-weight <= 600) -->
+  <!-- Left Block: Dialogue Input -->
+  <g transform="translate(60, 215)">
+    <rect width="460" height="150" fill="#FFFFFF" stroke="#171716" stroke-width="1.5"/>
+    <rect width="8" height="150" fill="#2B7FFF"/>
+    <text x="32" y="65" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif" font-size="40" font-weight="500" fill="#171716">对话意图与预算</text>
+    <text x="32" y="118" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif" font-size="40" font-weight="400" fill="#5A5A56">说需求，设预算</text>
+  </g>
+
+  <!-- Center Arrow -->
+  <g transform="translate(535, 275)">
+    <path d="M 0 15 L 75 15 M 60 0 L 75 15 L 60 30" fill="none" stroke="#2B7FFF" stroke-width="3"/>
+  </g>
+
+  <!-- Right Block: Generated Output -->
+  <g transform="translate(630, 215)">
+    <rect width="510" height="150" fill="#FFFFFF" stroke="#171716" stroke-width="1.5"/>
+    <rect width="8" height="150" fill="#171716"/>
+    <text x="32" y="65" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif" font-size="40" font-weight="500" fill="#171716">图片与视频交付</text>
+    <text x="32" y="118" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif" font-size="40" font-weight="400" fill="#5A5A56">收图像，存视频</text>
+  </g>
+</svg>

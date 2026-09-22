@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="420" viewBox="0 0 600 420" role="img" aria-labelledby="title desc">
+  <title id="title">100x 安全与控制</title>
+  <desc id="desc">展示 Codex 桌面端的凭据安全、对话调度与预算控制三大机制</desc>
+
+  <!-- Background Canvas -->
+  <rect width="600" height="420" fill="#FCFCFB" stroke="#D6D6D3" stroke-width="1"/>
+
+  <!-- Header (font-size >= 24, font-weight <= 600) -->
+  <g transform="translate(50, 48)">
+    <rect x="0" y="4" width="12" height="12" fill="#2B7FFF"/>
+    <text x="22" y="18" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif" font-size="28" font-weight="600" fill="#171716" letter-spacing="-0.5">安全与预算控制</text>
+  </g>
+
+  <!-- Pillar 1 -->
+  <g transform="translate(50, 85)">
+    <rect width="500" height="76" fill="#FFFFFF" stroke="#171716" stroke-width="1.2"/>
+    <rect width="6" height="76" fill="#2B7FFF"/>
+    <text x="24" y="32" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif" font-size="24" font-weight="600" fill="#171716">01 凭据安全</text>
+    <text x="24" y="62" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif" font-size="24" font-weight="400" fill="#5A5A56">DPAPI 本地加密 · 不进聊天窗口</text>
+  </g>
+
+  <!-- Pillar 2 -->
+  <g transform="translate(50, 180)">
+    <rect width="500" height="76" fill="#FFFFFF" stroke="#171716" stroke-width="1.2"/>
+    <rect width="6" height="76" fill="#2B7FFF"/>
+    <text x="24" y="32" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif" font-size="24" font-weight="600" fill="#171716">02 对话调度</text>
+    <text x="24" y="62" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif" font-size="24" font-weight="400" fill="#5A5A56">新任务生效 · 支持本地素材路径</text>
+  </g>
+
+  <!-- Pillar 3 -->
+  <g transform="translate(50, 275)">
+    <rect width="500" height="76" fill="#FFFFFF" stroke="#171716" stroke-width="1.2"/>
+    <rect width="6" height="76" fill="#171716"/>
+    <text x="24" y="32" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif" font-size="24" font-weight="600" fill="#171716">03 预算控制</text>
+    <text x="24" y="62" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif" font-size="24" font-weight="400" fill="#5A5A56">超预算自动中止 · 重试防重复扣费</text>
+  </g>
+
+  <!-- Bottom Note -->
+  <text x="50" y="390" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif" font-size="24" font-weight="400" fill="#5A5A56">为 Codex 桌面端提供确定性保护</text>
+</svg>

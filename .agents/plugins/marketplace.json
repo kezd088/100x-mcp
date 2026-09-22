@@ -1,0 +1,20 @@
+{
+  "name": "100x",
+  "interface": {
+    "displayName": "100x"
+  },
+  "plugins": [
+    {
+      "name": "100x",
+      "source": {
+        "source": "local",
+        "path": "./plugins/100x"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

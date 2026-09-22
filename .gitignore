@@ -1,0 +1,10 @@
+work/
+node_modules/
+.runtime/
+.env
+.env.*
+*.sqlite*
+*.log
+connection.json
+test-results/
+dist/

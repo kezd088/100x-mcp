@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 100" role="img" aria-labelledby="title desc">
+  <title id="title">100x</title>
+  <desc id="desc">100x primary logo with a blue exponent mark.</desc>
+  <g fill="none" stroke="#171716" stroke-width="7" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M31 30 39 22v56"/>
+    <rect x="55" y="22" width="36" height="56" rx="18"/>
+    <rect x="99" y="22" width="36" height="56" rx="18"/>
+  </g>
+  <g fill="none" stroke="#2B7FFF" stroke-width="5.5" stroke-linecap="square">
+    <path d="m143 12 22 22M165 12l-22 22"/>
+  </g>
+</svg>

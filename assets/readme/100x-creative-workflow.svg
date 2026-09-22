@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="520" viewBox="0 0 600 520" role="img" aria-labelledby="title desc">
+  <title id="title">100x 生成流程图解</title>
+  <desc id="desc">展示 100x 生成的五个核心阶段：查型号、查报价、预算提交、异步生成与保存交付</desc>
+
+  <!-- Background Canvas -->
+  <rect width="600" height="520" fill="#FCFCFB" stroke="#D6D6D3" stroke-width="1"/>
+
+  <!-- Header (font-size >= 24, font-weight <= 600) -->
+  <g transform="translate(50, 48)">
+    <rect x="0" y="4" width="12" height="12" fill="#2B7FFF"/>
+    <text x="22" y="18" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif" font-size="28" font-weight="600" fill="#171716" letter-spacing="-0.5">100x 生成流程</text>
+  </g>
+
+  <!-- Vertical Connecting Line -->
+  <path d="M 80 85 L 80 435" stroke="#D6D6D3" stroke-width="2"/>
+
+  <!-- Step 1 -->
+  <g transform="translate(50, 85)">
+    <rect width="500" height="56" fill="#FFFFFF" stroke="#171716" stroke-width="1.2"/>
+    <rect width="6" height="56" fill="#2B7FFF"/>
+    <text x="24" y="36" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif" font-size="24" font-weight="500" fill="#171716">01 查型号 · 确认可用规格</text>
+  </g>
+
+  <!-- Step 2 -->
+  <g transform="translate(50, 155)">
+    <rect width="500" height="56" fill="#FFFFFF" stroke="#171716" stroke-width="1.2"/>
+    <rect width="6" height="56" fill="#2B7FFF"/>
+    <text x="24" y="36" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif" font-size="24" font-weight="500" fill="#171716">02 查报价 · 15 分钟有效期</text>
+  </g>
+
+  <!-- Step 3 -->
+  <g transform="translate(50, 225)">
+    <rect width="500" height="56" fill="#FFFFFF" stroke="#171716" stroke-width="1.2"/>
+    <rect width="6" height="56" fill="#171716"/>
+    <text x="24" y="36" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif" font-size="24" font-weight="500" fill="#171716">03 预算提交 · 指定上限扣费</text>
+  </g>
+
+  <!-- Step 4 -->
+  <g transform="translate(50, 295)">
+    <rect width="500" height="56" fill="#FFFFFF" stroke="#171716" stroke-width="1.2"/>
+    <rect width="6" height="56" fill="#2B7FFF"/>
+    <text x="24" y="36" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif" font-size="24" font-weight="500" fill="#171716">04 异步生成 · 后台渲染进度</text>
+  </g>
+
+  <!-- Step 5 -->
+  <g transform="translate(50, 365)">
+    <rect width="500" height="56" fill="#FFFFFF" stroke="#171716" stroke-width="1.2"/>
+    <rect width="6" height="56" fill="#2B7FFF"/>
+    <text x="24" y="36" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif" font-size="24" font-weight="500" fill="#171716">05 保存交付 · 落盘本地路径</text>
+  </g>
+
+  <!-- Bottom Note -->
+  <text x="50" y="475" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif" font-size="24" font-weight="400" fill="#5A5A56">先报后扣 · 超预算中止 · 避免重扣</text>
+</svg>

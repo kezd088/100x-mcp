@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img" aria-labelledby="title desc">
+  <title id="title">100x Portrait Fold symbol</title>
+  <desc id="desc">Four portrait framing corners form the 100x interaction symbol.</desc>
+  <g fill="none" stroke="#171716" stroke-width="4" stroke-linecap="square" stroke-linejoin="round">
+    <path d="M31 34V23h15M69 34V23H54M31 66v11h15M69 66v11H54"/>
+    <path d="m39 39 22 22"/>
+  </g>
+  <path d="M61 39 39 61" fill="none" stroke="#2B7FFF" stroke-width="4.5" stroke-linecap="square"/>
+</svg>
