@@ -1,5 +1,5 @@
-import { readFile } from 'node:fs/promises';
-import { join } from 'node:path';
+import { readFile, mkdir, writeFile, rename } from 'node:fs/promises';
+import { join, dirname } from 'node:path';
 import { homedir } from 'node:os';
 import { execFile } from 'node:child_process';
 
@@ -9,12 +9,12 @@ export class ConnectionError extends Error {
 
 export function validateEndpoint(value) {
   let url;
-  try { url = new URL(value); } catch { throw new ConnectionError('100X_INVALID_URL', '请使用管理员提供的 100x MCP 地址。'); }
+  try { url = new URL(value); } catch { throw new ConnectionError('100X_INVALID_URL', '100x 连接地址无效，请重新连接。'); }
   const local = ['127.0.0.1', 'localhost', '[::1]'].includes(url.hostname);
   const own = url.hostname === '100xspeed.app' || url.hostname.endsWith('.100xspeed.app');
-  if (url.username || url.password || url.search || url.hash || url.pathname !== '/mcp' ||
+  if (url.username || url.password || url.search || url.hash || !['/mcp', '/api/mcp'].includes(url.pathname) ||
       !(local && ['http:', 'https:'].includes(url.protocol) || own && url.protocol === 'https:')) {
-    throw new ConnectionError('100X_INVALID_URL', '仅支持 100x 的 HTTPS /mcp 地址；本机测试可使用 localhost。');
+    throw new ConnectionError('100X_INVALID_URL', '仅支持 100x 的 HTTPS MCP 地址；本机测试可使用 localhost。');
   }
   return url.href;
 }
@@ -46,13 +46,41 @@ export async function readConnection(env = process.env) {
   }
   let record;
   try { record = JSON.parse(await readFile(connectionPath(env), 'utf8')); }
-  catch { throw new ConnectionError('100X_NOT_CONNECTED', '100x 已安装，但尚未连接。请运行安装器 -Connect，在安全输入框配置 100x 地址和令牌；不要将令牌发送到聊天。'); }
+  catch { throw new ConnectionError('100X_NOT_CONNECTED', '100x 尚未连接。调用 100x_connect，在网页确认授权即可。'); }
   const url = validateEndpoint(record.url);
   if (record.version !== 1 || record.protection !== 'windows-dpapi' || typeof record.token !== 'string') {
     throw new ConnectionError('100X_INVALID_CONFIG', '100x 连接配置无效，请重新运行连接脚本。');
   }
   if (cachedCipher !== record.token) { cachedToken = checkToken(await unprotect(record.token)); cachedCipher = record.token; }
   return { url, token: cachedToken };
+}
+
+export function protect(value) {
+  if (process.platform !== 'win32') throw new ConnectionError('100X_CONFIG_PLATFORM', '自动安全保存目前支持 Windows；其他系统可使用受保护的环境变量连接。');
+  return new Promise((resolve, reject) => {
+    const script = "$ErrorActionPreference='Stop'; Import-Module (Join-Path $PSHOME 'Modules/Microsoft.PowerShell.Security/Microsoft.PowerShell.Security.psd1'); [Console]::InputEncoding=[Text.UTF8Encoding]::new($false); $v=[Console]::In.ReadToEnd(); $s=ConvertTo-SecureString $v -AsPlainText -Force; [Console]::Write((ConvertFrom-SecureString $s))";
+    const child = execFile('powershell.exe', ['-NoLogo','-NoProfile','-NonInteractive','-Command',script], { windowsHide:true,timeout:10000,maxBuffer:32768 }, (error,stdout) => error ? reject(new ConnectionError('100X_SAVE_FAILED','无法加密凭据，请重试保存。')) : resolve(stdout));
+    child.stdin.on('error',()=>{}); child.stdin.end(value);
+  });
+}
+
+export async function saveProtected(path, record) {
+  await mkdir(dirname(path), {recursive:true,mode:0o700});
+  const temp = path + '.new-' + process.pid;
+  await writeFile(temp, JSON.stringify(record), {mode:0o600});
+  await new Promise((resolve,reject)=>{
+    const script = "$ErrorActionPreference='Stop'; [Console]::InputEncoding=[Text.UTF8Encoding]::new($false); $p=[Console]::In.ReadToEnd(); $acl=[Security.AccessControl.FileSecurity]::new(); $acl.SetAccessRuleProtection($true,$false); $sid=[Security.Principal.WindowsIdentity]::GetCurrent().User; $acl.SetAccessRule([Security.AccessControl.FileSystemAccessRule]::new($sid,'FullControl','Allow')); $acl.SetAccessRule([Security.AccessControl.FileSystemAccessRule]::new([Security.Principal.SecurityIdentifier]::new('S-1-5-18'),'FullControl','Allow')); [IO.File]::SetAccessControl($p,$acl)";
+    const child=execFile('powershell.exe',['-NoLogo','-NoProfile','-NonInteractive','-Command',script],{windowsHide:true,timeout:10000},error=>error?reject(new ConnectionError('100X_SAVE_FAILED','无法保护本机凭据文件，请重试保存。')):resolve());
+    child.stdin.on('error',()=>{}); child.stdin.end(temp);
+  });
+  await rename(temp,path);
+}
+
+export async function saveConnection({url,token}, env=process.env) {
+  const record={version:1,protection:'windows-dpapi',url:validateEndpoint(url),token:await protect(checkToken(token))};
+  await saveProtected(connectionPath(env),record);
+  // Confirm the durable file is decryptable before acknowledging to the server.
+  await readConnection({...env,HUNDREDX_TOKEN:''});
 }
 
 function checkToken(token) {

@@ -55,7 +55,7 @@ test('fresh stdio starts without credentials and exposes actionable connection s
   try {
     const init = await call('initialize', { protocolVersion: '2025-03-26' });
     assert.equal(init.result.serverInfo.name, '100x');
-    assert.equal((await call('tools/list')).result.tools.length, 8);
+    assert.equal((await call('tools/list')).result.tools.length, 9);
     const status = await call('tools/call', { name: '100x_connection_status', arguments: {} });
     assert.equal(status.result.structuredContent.error.code, '100X_NOT_CONNECTED');
     assert.equal((await call('tools/call', { name: 'arbitrary_request' })).error.code, -32602);

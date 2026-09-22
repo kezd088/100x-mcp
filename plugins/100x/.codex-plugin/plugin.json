@@ -1,6 +1,6 @@
 {
   "name": "100x",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "在 Codex 中使用 100x 生成图片与视频，报价、异步任务和素材统一管理。",
   "author": {
     "name": "100x"

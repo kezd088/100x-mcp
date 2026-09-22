@@ -12,9 +12,9 @@
 - **Node.js**：`v22.0.0` 或更高版本
 - **Git**：已加入系统 PATH
 - **Codex CLI**：0.155.1 或更新版本（支持插件）
-- **100x 接入凭据**：内测管理员提供的有效 100x MCP 访问地址与访问令牌（Token）
+- **100x 账户**：登录后授权当前设备；v0.3.0 默认使用 100x 官方授权服务。
 
-> 注：目前以 Windows 为主入口。实测说明：Windows Codex Desktop 0.155.1 运行时已成功加载 8 个 100x 工具与 100x:100x-creative，安装器隔离配置实测通过；实际桌面点按生成待用户体验。macOS 与 Linux 客户端适配暂未完成配套验收。
+> 注：目前以 Windows 为主入口。实测说明：v0.2.0 已在 Windows Codex Desktop 0.155.1 验证 8 个工具和 SKILL。v0.3.0 新增网页授权工具，本机已验证完整网页授权、加密保存与撤销；新版在用户自己的 Codex 任务中仍待验收。macOS 与 Linux 客户端适配暂未完成配套验收。
 
 ---
 
@@ -25,7 +25,7 @@
 在 Codex Desktop 中打开任意任务对话框，复制并发送以下自然语言指令：
 
 ```text
-请阅读 https://github.com/kezd088/100x-mcp/blob/main/INSTALL.md，按说明安装 100x MCP + Skill 到本机 Codex，检查安装结果。不要在对话里索取或显示访问令牌。
+请阅读 https://github.com/kezd088/100x-mcp/blob/main/INSTALL.md，按说明安装 100x MCP + SKILL 到本机 Codex，检查安装结果。不要在对话里索取或显示访问令牌。
 ```
 
 Codex 会自动读取安装规范并在后台完成初始化配置。
@@ -38,7 +38,7 @@ Codex 会自动读取安装规范并在后台完成初始化配置。
 & ([scriptblock]::Create((irm https://raw.githubusercontent.com/kezd088/100x-mcp/main/install.ps1))) -Connect
 ```
 
-- **`-Connect` 选项**：会在终端提示隐藏输入令牌（`Read-Host -AsSecureString`，不显示明文），并通过 **Windows DPAPI** 在本地加密保存在 `%LOCALAPPDATA%/100x/connection.json`。
+- **`-Connect` 选项**：打开 100x 授权页面，核对连接码并允许后，自动通过 **Windows DPAPI** 加密保存到 `%LOCALAPPDATA%/100x/connection.json`。凭据不会出现在终端或对话中。
 - **本地开发测试**：若进行插件本地开发，可指定本地源目录：
   ```powershell
   powershell -ExecutionPolicy Bypass -File .\install.ps1 -Source "C:\your-folder\100x-mcp" -Connect
@@ -50,7 +50,7 @@ Codex 会自动读取安装规范并在后台完成初始化配置。
 # 1. 注册 100x 市场源
 codex plugin marketplace add kezd088/100x-mcp --json
 
-# 2. 安装 100x 插件包（含 MCP 与 Skill）
+# 2. 安装 100x 插件包（含 MCP 与 SKILL）
 codex plugin add 100x@100x --json
 ```
 
@@ -58,7 +58,13 @@ codex plugin add 100x@100x --json
 
 ---
 
-## 3. 凭据管理与安全说明
+## 3. 账户授权与设备管理
+
+Codex 中发送「连接 100x」即可打开授权流程。允许后先显示「正在连接」，插件完成本机保存并确认后才显示「已连接」。连接码 10 分钟有效，设备授权 90 天有效。网络异常时查询原连接状态；过期后重新连接。
+
+在 100xspeed 侧栏「充值中心」下方点击 **MCP / SKILL** 查看设备。绿点代表授权有效，不代表设备在线。撤销后后续调用立即失效，已提交的生成任务继续处理。
+
+凭据保存：
 
 1. **DPAPI 本地密文存储**：令牌通过 Windows 操作系统级数据保护 API 加密保存在当前用户目录下（`%LOCALAPPDATA%/100x/connection.json`），文件设置仅当前用户及系统拥有权限。
 2. **禁止对话暴露**：不要在 Codex 聊天窗口内索取、粘贴或输出完整 Token。
@@ -66,11 +72,11 @@ codex plugin add 100x@100x --json
 
 ---
 
-## 4. 日常使用与 Skill 调度
+## 4. 日常使用与 SKILL 调度
 
-由于 Codex 桌面端在会话初始化时加载 Skill，**新安装或更新后的插件在「新建任务」后生效**。
+由于 Codex 桌面端在会话初始化时加载 SKILL，**新安装或更新后的插件在「新建任务」后生效**。
 
-### 触发创作 Skill
+### 触发创作 SKILL
 
 在 Codex 桌面端新建任务，输入 `$100x:100x-creative` 或直接使用自然语言：
 
@@ -131,7 +137,7 @@ codex plugin marketplace remove 100x
 
 ## 6. 常见问题排错 (Troubleshooting)
 
-### Q1: 对话提示「未找到 100x 工具或 Skill」
+### Q1: 对话提示「未找到 100x 工具或 SKILL」
 - **解决**：Codex 桌面端配置变更需要创建**新任务**（New Task）生效。请在新建任务的对话输入框中尝试 `$100x:100x-creative`。
 
 ### Q2: 报错 `100X_BUDGET_EXCEEDED`

@@ -18,14 +18,14 @@ try {
     const duration=output===undefined?undefined:Number(output);
     if(duration!==undefined&&(!Number.isFinite(duration)||duration<=0||duration>600))throw new Error('时长须为实际秒数，范围 0–600。');
     if(!mime.startsWith('image/')&&duration===undefined)throw new Error('上传视频或音频请附实际秒数。');
-    const response=await fetch(new URL('/upload',base),{method:'POST',redirect:'error',headers:{authorization:'Bearer '+connection.token,'content-type':'application/json'},body:JSON.stringify({content_base64:bytes.toString('base64'),mime_type:mime,duration_seconds:duration}),signal:AbortSignal.timeout(120000)});
+    const response=await fetch(new URL(base.pathname==='/api/mcp'?'/api/mcp/upload':'/upload',base),{method:'POST',redirect:'error',headers:{authorization:'Bearer '+connection.token,'content-type':'application/json'},body:JSON.stringify({content_base64:bytes.toString('base64'),mime_type:mime,duration_seconds:duration}),signal:AbortSignal.timeout(120000)});
     const result=await response.json();
     if(!response.ok)throw new Error(result.error?.message||'100x 素材上传失败。');
     if(!/^100x_asset_[a-f0-9]{32}$/.test(result.asset_id))throw new Error('100x 素材回执无效。');
     console.log(JSON.stringify({asset_id:result.asset_id,kind:result.kind,size_bytes:result.size_bytes}));
   }else if(action==='download'){
     const url=new URL(input),target=resolve(output||'');
-    if(!output||url.username||url.password||url.origin!==base.origin||!/^\/media\/100x_asset_[a-f0-9]{32}$/.test(url.pathname))throw new Error('请选择当前 100x 服务返回的下载链接和输出文件。');
+    if(!output||url.username||url.password||url.origin!==base.origin||!(base.pathname==='/api/mcp'?/^\/api\/mcp\/media\/100x_asset_[a-f0-9]{32}$/:/^\/media\/100x_asset_[a-f0-9]{32}$/).test(url.pathname))throw new Error('请选择当前 100x 服务返回的下载链接和输出文件。');
     const response=await fetch(url,{redirect:'error',signal:AbortSignal.timeout(120000)});
     if(!response.ok||!response.body)throw new Error('100x 下载失败；链接过期时请重新查询任务。');
     await mkdir(dirname(target),{recursive:true});

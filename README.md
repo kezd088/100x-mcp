@@ -1,12 +1,12 @@
 # 100x for Codex Desktop
 
 <p align="center">
-  <img src="./assets/readme/100x-codex-hero.svg" width="100%" alt="100x for Codex Desktop - 官方插件与创作 Skill 概览">
+  <img src="./assets/readme/100x-codex-hero.svg" width="100%" alt="100x for Codex Desktop - 官方插件与创作 SKILL 概览">
 </p>
 
-让 Codex 对话接入 100x 图片与视频生成。当前为公开客户端，服务接入需使用内测管理员分发的服务地址与令牌（公共服务未开放）。
+让 Codex 对话接入 100x 图片与视频生成。登录 100x、核对连接码、确认后即可创作。账户授权与设备管理就在「充值中心」下方的「MCP / SKILL」。
 
-**版本**：v0.2.0 · **Marketplace**：`100x` · **Plugin**：`100x` · **Skill**：`100x:100x-creative` · **官网**：[100xspeed.app/mcp](https://100xspeed.app/mcp/)
+**版本**：v0.3.0 · **Marketplace**：`100x` · **Plugin**：`100x` · **SKILL**：`100x:100x-creative` · **官网**：[100xspeed.app/mcp](https://100xspeed.app/mcp/)
 
 ---
 
@@ -17,12 +17,12 @@
 在 Codex Desktop 任意任务中发送以下指令：
 
 ```text
-请阅读 https://github.com/kezd088/100x-mcp/blob/main/INSTALL.md，按说明安装 100x MCP + Skill 到本机 Codex，检查安装结果。不要在对话里索取或显示访问令牌。
+请阅读 https://github.com/kezd088/100x-mcp/blob/main/INSTALL.md，按说明安装 100x MCP + SKILL 到本机 Codex，检查安装结果。不要在对话里索取或显示访问令牌。
 ```
 
 ### 备选：Windows PowerShell 一键安装
 
-在 PowerShell 中运行（终端隐藏输入令牌，通过 Windows DPAPI 本地加密保存）：
+在 PowerShell 中运行（打开网页登录授权，凭据由 Windows DPAPI 本地加密保存）：
 
 ```powershell
 & ([scriptblock]::Create((irm https://raw.githubusercontent.com/kezd088/100x-mcp/main/install.ps1))) -Connect
@@ -39,7 +39,7 @@ codex plugin add 100x@100x --json
 .\install.ps1 -Source "C:\your-folder\100x-mcp" -Connect
 ```
 
-环境前提：Node.js 22+、Git、Codex CLI 0.155.1+。Windows Codex Desktop 0.155.1 运行时已成功加载 8 个工具与 Skill；系统兼容性与排错详见 [接入指南](./docs/codex-desktop.md)。
+环境前提：Node.js 22+、Git、Codex CLI 0.155.1+。v0.2.0 曾在 Windows Codex Desktop 0.155.1 验证 8 个工具；v0.3.0 增加网页授权工具，目前在本机完成 9 个工具的标准输入输出验证；系统兼容性与排错详见 [接入指南](./docs/codex-desktop.md)。
 </details>
 
 ---
@@ -48,7 +48,11 @@ codex plugin add 100x@100x --json
 
 在 Codex 桌面端新建任务，输入 `$100x:100x-creative` 即可开始创作：
 
-### 1. 检查连接状态（不扣积分）
+### 1. 连接账户（不扣积分）
+
+新任务中发送「连接 100x」。Codex 打开授权页后，核对连接码并点击「允许连接」。看到「已连接」后开始创作。设备在 100xspeed 侧栏「充值中心」下方的「MCP / SKILL」中管理，可随时撤销。
+
+检查连接：
 
 ```text
 $100x:100x-creative 检查 100x 连接，列出可用型号和余额，不生成。
