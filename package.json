@@ -1,9 +1,14 @@
 {
   "name": "100x-codex",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "type": "module",
-  "description": "100x MCP and Skill client for Codex Desktop",
-  "engines": { "node": ">=22" },
-  "scripts": { "test": "node --test tests/*.test.mjs", "check": "node --check plugins/100x/scripts/bridge.mjs" }
+  "description": "100x MCP and SKILL client for Codex Desktop",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "test": "node --test tests/*.test.mjs",
+    "check": "node --check plugins/100x/scripts/bridge.mjs"
+  }
 }

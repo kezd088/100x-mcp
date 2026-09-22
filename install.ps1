@@ -22,7 +22,7 @@ if ($LASTEXITCODE -ne 0 -or $codexVersion -notmatch '(\d+\.\d+\.\d+)' -or [versi
     throw '100x 桌面端插件需要 Codex CLI 0.155.1 或更新版本。'
 }
 
-Write-Host '正在为 Codex 桌面端安装 100x MCP + Skill…'
+Write-Host '正在为 Codex 桌面端安装 100x MCP / SKILL…'
 $marketplace = Invoke-CodexJson -Arguments @('plugin','marketplace','add',$Source,'--json')
 if ($marketplace.marketplaceName -ne '100x') { throw '来源不是 100x 插件目录，停止安装。' }
 $installed = Invoke-CodexJson -Arguments @('plugin','add','100x@100x','--json')
@@ -37,10 +37,10 @@ if ($active.Count -ne 1) { throw '100x 尚未启用，请在 Codex 插件页核�
 Write-Host ('100x ' + $installed.version + ' 已安装并启用。')
 if ($Connect) {
     if ($env:OS -ne 'Windows_NT') { throw '-Connect 向导目前支持 Windows；其他平台接入方式见文档。' }
-    & (Join-Path $pluginPath 'scripts/connect.ps1')
+    & node (Join-Path $pluginPath 'scripts/connect.mjs')
     if ($LASTEXITCODE -ne 0) { throw '插件已安装，100x 连接配置未完成。' }
 } else {
-    Write-Host '如尚未连接，请在 PowerShell 运行同一安装命令并加 -Connect，安全输入 100x 地址与令牌。'
+    Write-Host '在 Codex 中发送「连接 100x」，打开授权页确认即可。也可在安装命令加 -Connect。'
 }
 Write-Host '回到 Codex 桌面端，新建任务后使用 $100x:100x-creative。安装器不会启动 CLI 聊天。'
-Write-Host '当前接入需要内测管理员提供的 100x MCP 地址和访问令牌，安装不附带生成额度。'
+Write-Host '使用自己的 100x 账户授权，生成消耗该账户积分。'

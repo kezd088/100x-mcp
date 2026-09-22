@@ -5,7 +5,7 @@ description: 用 100x MCP 在 Codex 中生成或编辑图片、生成视频。�
 
 使用可用的 `100x_*` MCP 工具完成创作。工具名可能带安装命名空间前缀，按后缀识别。
 
-主要使用场景是 Codex 桌面端对话，无需另开 CLI 会话。插件安装后在新任务中加载；连接未配置时请用户在自己的 PowerShell 运行安装器 `-Connect`，不要索取令牌到聊天，也不要索取模型厂商密钥。`100x_connection_status` 只检查配置，连通性仍需型号或余额工具验证。
+主要使用场景是 Codex 桌面端对话。插件安装后在新任务中加载。未连接时调用 `100x_connect`，在 Codex 浏览器打开返回的 `verification_uri`，展示 `user_code` 供用户核对。用户自行登录并允许；不要代点授权按钮。按 `poll_after_ms` 查询 `100x_connection_status`，收到 `connected` 再创作。凭据由插件在本机加密保存，不索取令牌、密码或厂商密钥到聊天。网络错误保留当前连接请求，先查状态；过期或拒绝后用户要求重连时再调用 `100x_connect`。
 
 1. 每个会话首次使用时调用 `100x_list_models`。从返回的可用型号和 variants 选择匹配的模式、分辨率、比例和时长，不自行猜测规格。
 2. 有参考素材时先上传，取得 `100x_asset_*` 编号。`text` 不含参考素材；`reference` 为参考创作；`first_frame` 为首帧；`first_last_frame` 为首尾帧。每种模式以模型目录为准。
