@@ -1,13 +1,17 @@
 import { randomBytes } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
-import { platform } from 'node:os';
 import { ConnectionError, connectionPath, protect, unprotect, saveProtected, saveConnection, readConnection, validateEndpoint, request } from './connection.mjs';
+
+const SYSTEM_NAMES = { win32: 'Windows', darwin: 'macOS', linux: 'Linux' };
 
 export class DeviceConnection {
   constructor(env=process.env, dependencies={}) {
     this.env=env; this.fetch=dependencies.fetch || fetch; this.save=dependencies.save || saveConnection;
+    this.protection=dependencies.protection || {};
     this.pending=null; this.flight=null; this.loaded=false; this.timer=null; this.state=null;
   }
+  get platform() { return this.protection.platform || process.platform; }
+  pendingPath() { return connectionPath(this.env,this.platform)+'.pending'; }
   async call(url,path,{body,token}={}) {
     const base=new URL(validateEndpoint(url));
     const endpoint=new URL('/api/mcp/'+path,base);
@@ -20,11 +24,12 @@ export class DeviceConnection {
   }
   async load() {
     if(this.loaded) return; this.loaded=true;
-    try { const record=JSON.parse(await readFile(connectionPath(this.env)+'.pending','utf8')); const data=JSON.parse(await unprotect(record.cipher)); if(data && data.deviceCode && new Date(data.expires_at).getTime()>Date.now()) { validateEndpoint(data.url); this.pending=data; } }
+    try { const record=JSON.parse(await readFile(this.pendingPath(),'utf8')); const data=JSON.parse(await unprotect(record.cipher,this.protection)); if(data && data.deviceCode && new Date(data.expires_at).getTime()>Date.now()) { validateEndpoint(data.url); this.pending=data; } }
     catch(error) { if(error.code!=='ENOENT') this.state={status:'unavailable',message:'上次连接未恢复，请重新连接。'}; }
   }
   async persist() {
-    await saveProtected(connectionPath(this.env)+'.pending',{cipher:await protect(JSON.stringify(this.pending || {}))});
+    const path=this.pendingPath();
+    await saveProtected(path,{cipher:await protect(JSON.stringify(this.pending || {}),{...this.protection,platform:this.platform,env:this.env,path,scope:'pending'})},this.protection);
   }
   async connect() {
     await this.load();
@@ -33,7 +38,7 @@ export class DeviceConnection {
       if(this.pending && Date.parse(this.pending.expires_at)>Date.now()) { this.schedule(); return this.publicState(); }
       const url=validateEndpoint(this.env.HUNDREDX_URL || 'https://100xspeed.app/api/mcp');
       const deviceCode=randomBytes(32).toString('hex');
-      const result=await this.call(url,'device',{body:{device_code:deviceCode,device_name:'Codex · '+(platform()==='win32'?'Windows':platform())}});
+      const result=await this.call(url,'device',{body:{device_code:deviceCode,device_name:'Codex · '+(SYSTEM_NAMES[this.platform] || this.platform)}});
       const verification=new URL(result.verification_uri);
       const local=['127.0.0.1','localhost','[::1]'].includes(new URL(url).hostname);
       if((!local && verification.origin!==new URL(url).origin) || (local && !['127.0.0.1','localhost','[::1]'].includes(verification.hostname))) throw new ConnectionError('100X_PROTOCOL_ERROR','授权页面地址无效。');
@@ -61,14 +66,14 @@ export class DeviceConnection {
           if(result.status==='denied') { this.state={status:'denied',message:'本次授权已取消。'}; this.pending=null; await this.persist(); return; }
           if(result.status==='pending') { this.state={status:'waiting'}; return; }
           if(result.status==='connected') {
-            const saved=await readConnection(this.env); await this.call(saved.url,'connection',{token:saved.token});
+            const saved=await readConnection(this.env,this.protection); await this.call(saved.url,'connection',{token:saved.token});
             this.state={status:'connected'}; this.pending=null; await this.persist(); return;
           }
           if(result.status!=='approved' || typeof result.access_token!=='string') throw new ConnectionError('100X_PROTOCOL_ERROR','授权响应无效。');
           p.token=result.access_token; await this.persist();
         }
         this.state={status:'saving'};
-        await this.save({url:p.url,token:p.token},this.env);
+        await this.save({url:p.url,token:p.token},this.env,this.protection);
         await this.call(p.url,'ack',{body:{saved:true},token:p.token});
         this.state={status:'connected'}; this.pending=null; await this.persist();
       } catch(error) {
@@ -84,7 +89,7 @@ export class DeviceConnection {
     await this.load();
     if(this.pending) { this.schedule(); return this.publicState(); }
     if(['denied','expired'].includes(this.state?.status)) return this.publicState();
-    const saved=await readConnection(this.env);
+    const saved=await readConnection(this.env,this.protection);
     if(new URL(saved.url).pathname==='/mcp') { await request(saved,{jsonrpc:'2.0',id:'connection-check',method:'tools/call',params:{name:'100x_get_balance',arguments:{}}}); return {status:'connected',configured:true,connection_checked:true}; }
     const result=await this.call(saved.url,'connection',{token:saved.token});
     return {...result,configured:true,connection_checked:true};

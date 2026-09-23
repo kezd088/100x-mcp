@@ -1,6 +1,6 @@
 # 100x for Codex Desktop · 接入与使用指南
 
-本文档为 Windows 上的 Codex Desktop 用户提供安装、凭据管理、日常使用、版本更新与故障排错说明。
+本文档为 Windows 与 macOS 上的 Codex Desktop 用户提供安装、凭据管理、日常使用、版本更新与故障排错说明。
 
 ---
 
@@ -8,13 +8,13 @@
 
 在安装 100x 插件前，请确保系统已具备以下基础环境：
 
-- **操作系统**：Windows 10 / 11（x64）
+- **操作系统**：Windows 10 / 11（x64），或 macOS 13 及以上（Apple Silicon / Intel）
 - **Node.js**：`v22.0.0` 或更高版本
 - **Git**：已加入系统 PATH
 - **Codex CLI**：0.155.1 或更新版本（支持插件）
-- **100x 账户**：登录后授权当前设备；v0.3.0 默认使用 100x 官方授权服务。
+- **100x 账户**：登录后授权当前设备；v0.3.0 起默认使用 100x 官方授权服务。
 
-> 注：目前以 Windows 为主入口。实测说明：v0.2.0 已在 Windows Codex Desktop 0.155.1 验证 8 个工具和 SKILL。v0.3.0 新增网页授权工具，本机已验证完整网页授权、加密保存与撤销；新版在用户自己的 Codex 任务中仍待验收。macOS 与 Linux 客户端适配暂未完成配套验收。
+> 注：实测说明：v0.2.0 已在 Windows Codex Desktop 0.155.1 验证 8 个工具和 SKILL。v0.3.0 新增网页授权工具，已在 Windows 验证完整网页授权、加密保存与撤销。v0.3.1 补齐 macOS：钥匙串加密保存、`install.sh` 安装器与手动连接入口，客户端测试用替身钥匙串在 Windows 上全绿，**但尚未在真实 macOS 机器上跑过一次完整安装与授权**，属于待验收状态。Linux 只能安装插件，凭据保存会明确报错，不退回明文。
 
 ---
 
@@ -30,18 +30,27 @@
 
 Codex 会自动读取安装规范并在后台完成初始化配置。
 
-### 方式 B：Windows PowerShell 一键脚本安装
+### 方式 B：一键脚本安装
 
-打开 Windows PowerShell，运行以下单行命令：
+Windows PowerShell，运行以下单行命令：
 
 ```powershell
 & ([scriptblock]::Create((irm https://raw.githubusercontent.com/kezd088/100x-mcp/main/install.ps1))) -Connect
 ```
 
-- **`-Connect` 选项**：打开 100x 授权页面，核对连接码并允许后，自动通过 **Windows DPAPI** 加密保存到 `%LOCALAPPDATA%/100x/connection.json`。凭据不会出现在终端或对话中。
+macOS 终端，运行以下单行命令：
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/kezd088/100x-mcp/main/install.sh | bash -s -- --connect
+```
+
+- **`-Connect` / `--connect` 选项**：打开 100x 授权页面，核对连接码并允许后自动加密保存——Windows 走 **DPAPI** 存到 `%LOCALAPPDATA%/100x/connection.json`，macOS 走 **钥匙串**（服务名 `100x-codex`）、配置文件 `~/Library/Application Support/100x/connection.json` 里只留条目引用。凭据不会出现在终端或对话中。
 - **本地开发测试**：若进行插件本地开发，可指定本地源目录：
   ```powershell
   powershell -ExecutionPolicy Bypass -File .\install.ps1 -Source "C:\your-folder\100x-mcp" -Connect
+  ```
+  ```bash
+  ./install.sh --source "/your-folder/100x-mcp" --connect
   ```
 
 ### 方式 C：Codex 原生插件命令安装
@@ -66,9 +75,13 @@ Codex 中发送「连接 100x」即可打开授权流程。允许后先显示「
 
 凭据保存：
 
-1. **DPAPI 本地密文存储**：令牌通过 Windows 操作系统级数据保护 API 加密保存在当前用户目录下（`%LOCALAPPDATA%/100x/connection.json`），文件设置仅当前用户及系统拥有权限。
+1. **操作系统级密文存储**：
+   - **Windows**：令牌通过 DPAPI 加密后保存在 `%LOCALAPPDATA%/100x/connection.json`，文件权限收紧为仅当前用户与系统。
+   - **macOS**：令牌存入当前登录用户的钥匙串（服务名 `100x-codex`），写入时只通过标准输入传递、不进入进程参数表；`~/Library/Application Support/100x/connection.json` 只保存 `keychain:1:<条目名>` 这样的引用，目录与文件权限为 `700 / 600`。
+   - 两边都绑定当前系统账户：配置文件复制到另一台机器或另一个用户下同样解不开，会报 `100X_CREDENTIAL_UNREADABLE`。
 2. **禁止对话暴露**：不要在 Codex 聊天窗口内索取、粘贴或输出完整 Token。
 3. **无需手动修改配置**：安装器会自动配置 MCP 入口，无需手动编辑 `config.toml`。
+4. **网页授权不可用时**：可运行 `node <插件目录>/scripts/connect-manual.mjs`（macOS / Linux）或 `scripts/connect.ps1`（Windows）手动录入地址与令牌，输入过程隐藏、不回显。
 
 ---
 
@@ -131,7 +144,7 @@ codex plugin remove 100x@100x
 codex plugin marketplace remove 100x
 ```
 
-> 注：卸载插件不会自动删除加密凭据文件。如需彻底清除凭据，请自行删除 `%LOCALAPPDATA%/100x/connection.json`。
+> 注：卸载插件不会自动删除加密凭据。如需彻底清除：Windows 删除 `%LOCALAPPDATA%/100x/connection.json` 及其 `.bak-*` 备份；macOS 删除 `~/Library/Application Support/100x/connection.json`，再到「钥匙串访问」搜索 `100x-codex` 删除对应条目（或执行 `security delete-generic-password -s 100x-codex`）。
 
 ---
 
@@ -147,3 +160,15 @@ codex plugin marketplace remove 100x
 ### Q3: 报错连接失败或 127.0.0.1 拒绝连接
 - **原因**：误设为本地回环地址，但本机并未运行私有 100x 服务。
 - **解决**：客户端本身不包含远程公共算力。请联系 100x 内测管理员获取正确的远程 MCP 服务地址，并重新运行带有 `-Connect` 的命令配置连接。
+
+### Q4: macOS 安装成功，但新任务里没有 100x 工具
+- **原因**：Codex 桌面端从 Dock / Launchpad 启动时不继承终端的 PATH。若 Node 装在 Homebrew 目录（`/opt/homebrew/bin/node` 或 `/usr/local/Cellar/...`），插件配置里的 `node` 命令可能找不到。安装器检测到这种情况会在末尾提示。
+- **解决**：把 node 暴露到 GUI 可见的位置，例如 `sudo ln -s "$(command -v node)" /usr/local/bin/node`；或从终端执行 `open -a Codex` 启动桌面端（这样会继承当前 shell 的 PATH）。改完新建任务再试。
+
+### Q5: macOS 报 `100X_CREDENTIAL_UNREADABLE`
+- **原因**：钥匙串条目不在当前登录用户下，或配置文件是从另一台机器 / 另一个账户复制过来的。
+- **解决**：在本机当前用户下重新发送「连接 100x」走一遍网页授权。若系统弹出钥匙串访问确认框，选择「始终允许」；点「拒绝」会导致读取失败。
+
+### Q6: macOS 提示 `100X_CONFIG_PLATFORM`
+- **原因**：当前系统不是 Windows 或 macOS（例如 Linux）。100x 不会在没有操作系统级保护的平台上退回明文保存。
+- **解决**：改用 `HUNDREDX_URL` 与 `HUNDREDX_TOKEN` 环境变量接入，并确认桌面端进程确实继承了这两个变量。
